@@ -142,11 +142,11 @@ body {
 }
 
 .p2 {
-  @apply text-[14px] leading-[24px] font-normal;
+  @apply text-[12px] leading-[14px] font-normal;
 }
 
 .container {
-  --container-max-width: 100%;
+  --container-max-width: 328px;
   max-width: var(--container-max-width);
 }
 
@@ -157,12 +157,12 @@ body {
 }
 @media (min-width: 768px) {
   .container {
-    --container-max-width: 720px;
+    --container-max-width: 704px;
   }
 }
 @media (min-width: 1024px) {
   .container {
-    --container-max-width: 960px;
+    --container-max-width: 903px;
   }
 }
 @media (min-width: 1280px) {

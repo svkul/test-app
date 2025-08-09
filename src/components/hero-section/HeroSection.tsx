@@ -1,15 +1,14 @@
-"use client";
-
 import Image from "next/image";
+import { cookies } from "next/headers";
 
-import { Button } from "./ui/button";
-import { useScrollToElement } from "@/hooks/useScrollToElement";
+import { Action } from "./Action";
 
-export const HeroSection = () => {
-  const scrollTo = useScrollToElement();
+export const HeroSection = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
   return (
-    <section className="container mx-auto relative min-h-[650px] flex items-center justify-center overflow-hidden mb-[70px]">
+    <section className="mx-auto relative min-h-[500px] lg:min-h-[650px] max-w-[1170px] flex items-center justify-center overflow-hidden mb-[70px]">
       <Image
         src="/hero.jpeg"
         alt="Hero background"
@@ -20,8 +19,8 @@ export const HeroSection = () => {
 
       <div className="absolute inset-0 bg-black/50 z-10" />
 
-      <div className="relative z-10 text-center text-white flex flex-col items-center flex-1 max-w-[380px]">
-        <h1 className="h1 mb-[21px]">
+      <div className="relative z-10 text-center text-white flex flex-col items-center flex-1 max-w-[320px] sm:max-w-[380px]">
+        <h1 className="h1 mb-[21px] -mt-[25px] sm:mt-[0px]">
           Test assignment for front-end developer
         </h1>
 
@@ -33,14 +32,7 @@ export const HeroSection = () => {
           Front-End Development keeps evolving.
         </p>
 
-        <Button
-          className="text-foreground"
-          variant="yellow"
-          size="yellow"
-          onClick={() => scrollTo("signUp")}
-        >
-          Sign Up
-        </Button>
+        <Action isToken={Boolean(token)} />
       </div>
     </section>
   );

@@ -7,10 +7,14 @@ interface FloatingInputProps extends React.ComponentProps<"input"> {
   label: string;
   error?: boolean;
   phone?: boolean;
+  req?: boolean;
 }
 
 export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
-  ({ label, className, error, id, name, phone = false, ...props }, ref) => {
+  (
+    { label, className, error, id, name, req, phone = false, ...props },
+    ref
+  ) => {
     const inputId = id || name;
     const hasValue =
       props.value !== undefined
@@ -21,11 +25,17 @@ export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
 
     return (
       <div className="relative w-full">
+        {req && (
+          <span className="absolute top-[2px] right-[5px] text-gray-500">
+            *
+          </span>
+        )}
+
         <input
           id={inputId}
           ref={phone ? maskedInputRef : ref}
           className={cn(
-            "peer block w-full border border-gray-300 rounded-[4px] px-4 py-3 text-base text-gray-900 placeholder-transparent focus:outline-none transition",
+            "peer block w-full border border-gray-300 rounded-[4px] px-3 py-[14px] text-base text-gray-900 placeholder-transparent focus:outline-none transition",
             error
               ? "border-red-500 focus:border-red-500"
               : "border-gray-300 focus:border-gray-300",

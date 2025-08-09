@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
-import { Header } from "@/components/Header";
+import { cookies } from "next/headers";
+
+import QueryProvider from "@/components/QueryProvider";
+import { Header } from "@/components/header/Header";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -15,17 +19,24 @@ export const metadata: Metadata = {
   description: "ABZ Test App",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value || null;
+
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${nunito.variable} antialiased`}>
-        <Header />
+        <Toaster />
 
-        {children}
+        <QueryProvider tokenFromServer={token}>
+          <Header />
+
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

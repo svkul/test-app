@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { fetchPositions } from "@/services/externalApi";
+import { type PositionsResponse } from "@/types";
 
 export async function GET() {
-  const data = await fetchPositions();
-  return NextResponse.json(data);
+  const data: PositionsResponse = await fetchPositions();
+  return NextResponse.json<PositionsResponse>(data);
 }

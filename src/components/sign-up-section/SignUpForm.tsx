@@ -3,12 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useTokenMutation } from "@/hooks/useTokenMutation";
-import { type Position } from "@/types";
+import { typedFetch } from "@/services/externalApi";
+import { UserResponse, type Position } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ import { FloatingInput } from "../ui/floatingInput";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { FileUpload } from "../ui/uploadInput";
 import { formatPhoneNumber } from "@/lib/utils";
+import { useUsersStore } from "@/stores/useUsersStore";
 
 interface SignUpFormProps {
   positions: Position[];
@@ -63,7 +64,7 @@ const formSchema = z.object({
 
 export const SignUpForm = ({ positions, isToken }: SignUpFormProps) => {
   const { mutate: getToken, isPending } = useTokenMutation();
-  const [isSuccess, setIsSuccess] = useState(false);
+  const { count: storeCount, loadUsers } = useUsersStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,22 +84,24 @@ export const SignUpForm = ({ positions, isToken }: SignUpFormProps) => {
   } = form;
 
   const { mutate: addNewUser, isPending: isPendingNewUser } = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
+    mutationFn: async (
+      values: z.infer<typeof formSchema>
+    ): Promise<UserResponse> => {
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
         formData.append(key, value as any);
       });
 
-      const res = await fetch("/api/users", { method: "POST", body: formData });
-
-      if (!res.ok) throw new Error("Failed to fetch users");
-      return res.json();
+      return typedFetch<UserResponse>("/api/users", {
+        method: "POST",
+        body: formData,
+      });
     },
     onSuccess: (data) => {
       if (data.success) {
-        setIsSuccess(true);
         form.reset();
         toast.success("User successfully registered");
+        loadUsers(storeCount);
       } else {
         if (data.fails) {
           Object.entries(data.fails).forEach(([field, messages]) => {

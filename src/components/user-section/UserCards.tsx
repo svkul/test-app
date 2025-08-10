@@ -1,74 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
+import { useUsersStore } from "@/stores/useUsersStore";
 import { type UsersResponse } from "@/types";
 import { cn } from "@/lib/utils";
-
-import { SignUpSection } from "@/components/sign-up-section/SignUpSection";
 
 import { Button } from "../ui/button";
 
 import { UserCard } from "./UserCard";
 
 export const UserCards = ({ total_users, users }: UsersResponse) => {
-  const [usersList, setUserList] = useState(users);
-  const [totalUserVal, setTotalUsers] = useState(total_users);
-  const [countVal, setCount] = useState(
-    process.env.NEXT_PUBLIC_USER_PER_PAGE
-      ? +process.env.NEXT_PUBLIC_USER_PER_PAGE
-      : 6
-  );
-
-  const { mutate: loadUsers, isPending } = useMutation({
-    mutationKey: ["loadUsers", countVal],
-    mutationFn: async ({ count }: { count: number }) => {
-      const res = await fetch(`/api/users?count=${count}`);
-
-      if (!res.ok) throw new Error("Failed to fetch users");
-      return res.json();
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        setUserList(data.users);
-        setCount(data.count);
-        setTotalUsers(data.total_users);
-      }
-    },
-  });
+  const {
+    users: storeUsers,
+    total_users: storeTotal,
+    count: storeCount,
+    isLoading,
+    loadUsers,
+    initialize,
+  } = useUsersStore();
 
   const handleClick = () => {
-    const newCountVal =
-      +countVal +
-      (process.env.NEXT_PUBLIC_USER_PER_PAGE
-        ? +process.env.NEXT_PUBLIC_USER_PER_PAGE
-        : 6);
+    const perPage = process.env.NEXT_PUBLIC_USER_PER_PAGE
+      ? Number(process.env.NEXT_PUBLIC_USER_PER_PAGE)
+      : 6;
 
-    loadUsers({ count: newCountVal });
-    setCount(newCountVal);
+    loadUsers(storeCount + perPage);
   };
+
+  useEffect(() => {
+    if (storeCount === 0 && users.length > 0) {
+      const count = process.env.NEXT_PUBLIC_USER_PER_PAGE
+        ? +process.env.NEXT_PUBLIC_USER_PER_PAGE
+        : 6;
+      initialize({ users, total_users, count });
+    }
+  }, [initialize, storeCount, users, total_users]);
 
   return (
     <>
       <div
         className={cn(
           " grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[20px] md:gap-[18px] lg:gap-[30px] justify-items-stretch w-full",
-          totalUserVal <= +countVal ? "mb-[0px]" : "mb-[60px] sm:mb-[50px]"
+          storeTotal <= storeCount ? "mb-[0px]" : "mb-[60px] sm:mb-[50px]"
         )}
       >
-        {usersList.map((user) => (
+        {storeUsers.map((user) => (
           <UserCard key={user.id} {...user} />
         ))}
       </div>
 
-      {totalUserVal > +countVal && (
+      {storeTotal > storeCount && (
         <Button
           className="text-foreground"
           variant="yellow"
           size="yellow"
           onClick={handleClick}
-          isLoading={isPending}
+          isLoading={isLoading}
         >
           Show more
         </Button>

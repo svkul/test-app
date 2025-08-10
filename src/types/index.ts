@@ -27,7 +27,6 @@ export interface UserParams {
   phone: string;
   position_id: number;
   photo: File;
-  token: string;
 }
 
 export interface UserResponse {
@@ -53,3 +52,6 @@ export interface TokenResponse {
   success: boolean;
   token: string;
 }
+
+export type SuccessResponse = { success: true };
+export type ErrorResponse = { error: string };

@@ -1,11 +1,13 @@
 import { HeroSection } from "@/components/hero-section/HeroSection";
-import { RequestsSection } from "@/components/requests-section/RequestSection";
+import { UsersSection } from "@/components/user-section/UsersSection";
+import { SignUpSection } from "@/components/sign-up-section/SignUpSection";
 
 export default function Home() {
   return (
     <>
       <HeroSection />
-      <RequestsSection />
+      <UsersSection />
+      <SignUpSection />
     </>
   );
 }

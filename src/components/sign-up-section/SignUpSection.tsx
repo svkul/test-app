@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 
+import { typedFetch } from "@/services/externalApi";
 import { SignUpForm } from "./SignUpForm";
+import { type PositionsResponse } from "@/types";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -8,15 +10,14 @@ export const SignUpSection = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
-  let positionsResponse = null;
+  let positionsResponse: PositionsResponse | null = null;
   let error = null;
 
   try {
-    const res = await fetch(`${baseUrl}/api/positions`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Failed to fetch users");
-    positionsResponse = await res.json();
+    positionsResponse = await typedFetch<PositionsResponse>(
+      `${baseUrl}/api/positions`,
+      { cache: "no-store" }
+    );
   } catch (e) {
     error = e instanceof Error ? e.message : "Unknown error";
   }

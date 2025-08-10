@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 
 import { fetchToken } from "@/services/externalApi";
+import {
+  type TokenResponse,
+  type ErrorResponse,
+  type SuccessResponse,
+} from "@/types";
 
 export async function GET() {
-  const data = await fetchToken();
+  const data: TokenResponse = await fetchToken();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   if (data.success) {
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json<SuccessResponse>({ success: true });
     response.cookies.set("token", data.token, {
       httpOnly: true,
       maxAge: 40 * 60,
@@ -17,12 +23,17 @@ export async function GET() {
 
     return response;
   } else {
-    return NextResponse.json({ error: "Failed to get token" }, { status: 500 });
+    return NextResponse.json<ErrorResponse>(
+      { error: "Failed to get token" },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE() {
-  const response = NextResponse.json({ success: true });
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  const response = NextResponse.json<SuccessResponse>({ success: true });
   response.cookies.set("token", "", {
     httpOnly: true,
     maxAge: 0,

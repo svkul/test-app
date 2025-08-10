@@ -1,4 +1,6 @@
+import { UsersResponse } from "@/types";
 import { UserCards } from "./UserCards";
+import { typedFetch } from "@/services/externalApi";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 const count = process.env.NEXT_PUBLIC_USER_PER_PAGE
@@ -6,15 +8,14 @@ const count = process.env.NEXT_PUBLIC_USER_PER_PAGE
   : 6;
 
 export const UsersSection = async () => {
-  let usersResponse = null;
-  let error = null;
+  let usersResponse: UsersResponse | null = null;
+  let error: string | null = null;
 
   try {
-    const res = await fetch(`${baseUrl}/api/users?count=${count}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Failed to fetch users");
-    usersResponse = await res.json();
+    usersResponse = await typedFetch<UsersResponse>(
+      `${baseUrl}/api/users?count=${count}`,
+      { cache: "no-store" }
+    );
   } catch (e) {
     error = e instanceof Error ? e.message : "Unknown error";
   }

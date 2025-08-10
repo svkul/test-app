@@ -1,5 +1,7 @@
 "use client";
 
+import { typedFetch } from "@/services/externalApi";
+import { type TokenResponse } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -8,11 +10,12 @@ export function useTokenMutation() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/token", { method: "GET" });
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      const res = await typedFetch<TokenResponse>("/api/token", {
+        method: "GET",
+      });
 
-      if (!res.ok) throw new Error("Failed to get token");
-      return res.json();
+      if (!res.success) throw new Error("Failed to get token");
+      return res;
     },
     onSuccess: async (data) => {
       if (data.success) {
@@ -27,11 +30,12 @@ export function useRemoveTokenMutation() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/token", { method: "DELETE" });
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      const res = await typedFetch<TokenResponse>("/api/token", {
+        method: "DELETE",
+      });
 
-      if (!res.ok) throw new Error("Failed to get token");
-      return res.json();
+      if (!res.success) throw new Error("Failed to get token");
+      return res;
     },
     onSuccess: async (data) => {
       if (data.success) {

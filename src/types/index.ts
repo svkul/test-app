@@ -55,3 +55,6 @@ export interface TokenResponse {
 
 export type SuccessResponse = { success: true };
 export type ErrorResponse = { error: string };
+export type FormValues = {
+  [key: string]: string | File | number | undefined;
+};

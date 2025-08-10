@@ -89,7 +89,15 @@ export const SignUpForm = ({ positions, isToken }: SignUpFormProps) => {
     ): Promise<UserResponse> => {
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
-        formData.append(key, value as any);
+        if (value !== undefined) {
+          if (typeof value === "number") {
+            formData.append(key, value.toString());
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, value);
+          }
+        }
       });
 
       return typedFetch<UserResponse>("/api/users", {
